@@ -1,7 +1,7 @@
 'use client';
 import { useStonkfun } from './stonkfun-provider';
 import { useState } from 'react';
-import { ArrowUpRight, Check, Copy } from 'lucide-react';
+import { ArrowUpRight, Check, Copy, Menu, X } from 'lucide-react';
 
 import { MINT, formatUsd } from '@/lib/stonkfun';
 
@@ -10,9 +10,10 @@ const contract='Lyi47medADEVDd5hxJo1mbxhnBct841sFpcGRyHTuwp';
 export function UbiHero(){
  const {metrics,paths}=useStonkfun();
  const [copied,setCopied]=useState(false);
+ const [menuOpen,setMenuOpen]=useState(false);
  async function copyContract(){try{await navigator.clipboard.writeText(contract);setCopied(true);setTimeout(()=>setCopied(false),1800)}catch{}}
  return <>
-  <header className="space-nav"><a href="#top" className="space-brand"><img src="/globe.webp" alt="" width={820} height={820} decoding="async"/><span>UNIVERSAL BASIC INCOME</span></a><nav aria-label="Main navigation"><a href="#lore">The Lore <ArrowUpRight aria-hidden="true"/></a><a href="#income">The Income <ArrowUpRight aria-hidden="true"/></a><a href="#record">The record <ArrowUpRight aria-hidden="true"/></a><a href={trade} className="buy" target="_blank" rel="noreferrer">Buy $UBI <ArrowUpRight aria-hidden="true"/></a></nav></header>
+  <header className="space-nav"><a href="#top" className="space-brand"><img src="/globe.webp" alt="" width={820} height={820} decoding="async"/><span>UNIVERSAL BASIC INCOME</span></a><button type="button" className="space-menu-toggle" aria-label={menuOpen?'Close navigation menu':'Open navigation menu'} aria-controls="primary-navigation" aria-expanded={menuOpen} onClick={()=>setMenuOpen(open=>!open)}>{menuOpen?<X aria-hidden="true"/>:<Menu aria-hidden="true"/>}</button><nav id="primary-navigation" className={menuOpen?'is-open':''} aria-label="Main navigation"><a href="#lore" onClick={()=>setMenuOpen(false)}>The Lore <ArrowUpRight aria-hidden="true"/></a><a href="#income" onClick={()=>setMenuOpen(false)}>The Income <ArrowUpRight aria-hidden="true"/></a><a href="#record" onClick={()=>setMenuOpen(false)}>The record <ArrowUpRight aria-hidden="true"/></a><a href={trade} className="buy" target="_blank" rel="noreferrer" onClick={()=>setMenuOpen(false)}>Buy $UBI <ArrowUpRight aria-hidden="true"/></a></nav></header>
   <section className="space-hero" aria-label="Universal Basic Income">
    <div className="space-emblem"><img src="/globe.webp" alt="Universal Basic Income" width={820} height={820} fetchPriority="high" decoding="async"/></div>
    <h1>The idea is 229 years old</h1><p className="space-subtitle">now the distribution is onchain.</p>
