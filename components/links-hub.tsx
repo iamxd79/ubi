@@ -22,7 +22,6 @@ export function LinksHub(){
   return <main className={styles.hub}>
     <div className={styles.orbit} aria-hidden="true"/>
     <div className={styles.grid} aria-hidden="true"/>
-    <div className={styles.particleField} aria-hidden="true">{Array.from({length:28},(_,index)=><i className={styles.particle} key={index}/>)}</div>
     <section className={styles.shell} aria-label="$UBI links">
       <div className={styles.identity}>
         <div className={styles.portraitFrame}><img src="/ubi-pfp.png" alt="Universal Basic Income" width={1254} height={1254}/></div>
@@ -64,3 +63,5 @@ export function LinksHub(){
     </section>
   </main>;
 }
+
+
