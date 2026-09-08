@@ -10,7 +10,7 @@ export function IncomeBoard(){
   <h2 id="income-title">The <span>Income</span> Board</h2>
   <p className="income-intro">85% of trading fees on this 4% pool are paid to $UBI holders in USDC. Holders with at least $20 of $UBI receive payouts automatically. Fees collect in a pot and pay out when the pot reaches 0.1% of market cap for market caps between $125K and $25M.</p>
   <div className="income-composition">
-   <div className="income-side income-side-left" aria-hidden="true"><img src="/income-board-elon.png" alt=""/></div>
+   <div className="income-side income-side-left" aria-hidden="true"><img src="/income-board-elon.webp" alt="" loading="lazy" decoding="async"/></div>
    <div className="income-card">
     <div className="income-stats">
      <div className="income-stat"><h3>TOTAL PAID TO HOLDERS</h3><strong id="paid-to-holders" data-json-path={paths.paidToHolders}>{formatUsd(metrics.paidToHolders)}</strong></div>
@@ -23,7 +23,7 @@ export function IncomeBoard(){
     </div>
     <div className="income-status"><span className={live?'income-dot':'income-dot stale'} aria-label={live?'Live data':'Waiting for live data'}/><span>last payout <time id="last-payout" dateTime={typeof metrics.lastPayoutAt==='string'?metrics.lastPayoutAt:undefined} data-json-path={paths.lastPayoutAt}>{relativePayout(metrics.lastPayoutAt,now)}</time></span><span aria-hidden="true">·</span><span>{live?'live from':'last available from'} <a href={'https://www.stonkfun.xyz/token/'+MINT} target="_blank" rel="noreferrer">stonkfun.xyz</a></span><span aria-hidden="true">·</span><span>refreshes every 30s</span></div>
    </div>
-   <div className="income-side income-side-right" aria-hidden="true"><img src="/income-board-trump.png" alt=""/></div>
+   <div className="income-side income-side-right" aria-hidden="true"><img src="/income-board-trump.webp" alt="" loading="lazy" decoding="async"/></div>
   </div>
  </section>;
 }

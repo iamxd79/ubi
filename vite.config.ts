@@ -1,6 +1,6 @@
 import { sites } from '@openai/sites-vite-plugin';
-import tailwindcss from '@tailwindcss/postcss';
 import { nitro } from 'nitro/vite';
+import { resolve } from 'node:path';
 import vinext from 'vinext';
 import { defineConfig } from 'vite';
 import hostingConfig from './.openai/hosting.json';
@@ -50,12 +50,28 @@ export default defineConfig(async () => {
     : await import('@cloudflare/vite-plugin');
 
   return {
-    css: { postcss: { plugins: [tailwindcss()] } },
+    resolve: {
+      alias: {
+        tailwindcss: resolve('node_modules/tailwindcss/index.css'),
+        'tw-animate-css': resolve('node_modules/tw-animate-css/dist/tw-animate.css'),
+      },
+    },
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
     plugins: isVercelDeployment
-      ? [vinext(), nitro()]
+      ? [
+          vinext(),
+          nitro({
+            routeRules: {
+              '/ubi-hero-background.webp': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+              '/income-board-elon.webp': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+              '/income-board-trump.webp': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+              '/globe.webp': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+              '/favicon.png': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+            },
+          }),
+        ]
       : [
           vinext(),
           sites(),
