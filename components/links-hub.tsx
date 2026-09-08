@@ -3,6 +3,7 @@
 import { ArrowUpRight, Check, Copy, ExternalLink, LineChart, Send, Sparkles, WalletCards } from 'lucide-react';
 import { useState } from 'react';
 import styles from './links-hub.module.css';
+import { trackEvent, trackOutbound } from '@/lib/analytics';
 
 const contract='Lyi47medADEVDd5hxJo1mbxhnBct841sFpcGRyHTuwp';
 const links={
@@ -17,7 +18,7 @@ const links={
 export function LinksHub(){
   const [copied,setCopied]=useState(false);
   async function copyContract(){
-    try{await navigator.clipboard.writeText(contract);setCopied(true);window.setTimeout(()=>setCopied(false),1800)}catch{}
+    try{await navigator.clipboard.writeText(contract);trackEvent('contract_copied',{location:'links_hub'});setCopied(true);window.setTimeout(()=>setCopied(false),1800)}catch{}
   }
   return <main className={styles.hub}>
     <div className={styles.orbit} aria-hidden="true"/>
@@ -28,20 +29,20 @@ export function LinksHub(){
       </div>
 
       <nav className={styles.actions} aria-label="$UBI destinations">
-        <a className={styles.primaryAction} href={links.trade} target="_blank" rel="noreferrer">
+        <a className={styles.primaryAction} href={links.trade} target="_blank" rel="noreferrer" onClick={()=>trackOutbound('trade','links_hub_primary')}>
           <span className={styles.actionIcon}><WalletCards aria-hidden="true"/></span>
           <span><small>THE MARKET</small><strong>Trade $UBI</strong></span>
           <ArrowUpRight className={styles.arrow} aria-hidden="true"/>
         </a>
         <div className={styles.actionGrid}>
-          <a className={styles.action} href={links.chart} target="_blank" rel="noreferrer">
+          <a className={styles.action} href={links.chart} target="_blank" rel="noreferrer" onClick={()=>trackOutbound('chart','links_hub')}>
             <LineChart aria-hidden="true"/><span><small>LIVE DATA</small><strong>Chart</strong></span><ArrowUpRight aria-hidden="true"/>
           </a>
-          <a className={styles.action} href={links.payouts} target="_blank" rel="noreferrer">
+          <a className={styles.action} href={links.payouts} target="_blank" rel="noreferrer" onClick={()=>trackOutbound('payouts','links_hub')}>
             <Sparkles aria-hidden="true"/><span><small>STONKFUN</small><strong>Payouts</strong></span><ArrowUpRight aria-hidden="true"/>
           </a>
         </div>
-        <a className={styles.loreAction} href={`${links.site}/#lore`}>
+        <a className={styles.loreAction} href={`${links.site}/#lore`} onClick={()=>trackEvent('lore_entered',{location:'links_hub'})}>
           <span>229 YEARS OF THE IDEA</span><strong>Enter the lore</strong><ArrowUpRight aria-hidden="true"/>
         </a>
       </nav>
@@ -49,8 +50,8 @@ export function LinksHub(){
       <section className={styles.socials} aria-label="Social links">
         <p>JOIN THE SIGNAL</p>
         <div>
-          <a href={links.x} target="_blank" rel="noreferrer"><span className={styles.xMark}>𝕏</span><span><small>FOLLOW ON</small><strong>@ubiszn</strong></span><ExternalLink aria-hidden="true"/></a>
-          <a href={links.telegram} target="_blank" rel="noreferrer"><Send aria-hidden="true"/><span><small>JOIN THE</small><strong>Telegram</strong></span><ExternalLink aria-hidden="true"/></a>
+          <a href={links.x} target="_blank" rel="noreferrer" onClick={()=>trackOutbound('x','links_hub')}><span className={styles.xMark}>𝕏</span><span><small>FOLLOW ON</small><strong>@ubiszn</strong></span><ExternalLink aria-hidden="true"/></a>
+          <a href={links.telegram} target="_blank" rel="noreferrer" onClick={()=>trackOutbound('telegram','links_hub')}><Send aria-hidden="true"/><span><small>JOIN THE</small><strong>Telegram</strong></span><ExternalLink aria-hidden="true"/></a>
         </div>
       </section>
 
@@ -59,7 +60,7 @@ export function LinksHub(){
         <button type="button" onClick={copyContract} aria-label="Copy UBI contract address">{copied?<Check aria-hidden="true"/>:<Copy aria-hidden="true"/>}<span>{copied?'COPIED':'COPY'}</span></button>
       </section>
 
-      <footer><span>THE DISTRIBUTION IS ONCHAIN.</span><a href={links.site}>www.ubiszn.com <ArrowUpRight aria-hidden="true"/></a></footer>
+      <footer><span>THE DISTRIBUTION IS ONCHAIN.</span><a href={links.site} onClick={()=>trackOutbound('website','links_hub_footer')}>www.ubiszn.com <ArrowUpRight aria-hidden="true"/></a></footer>
     </section>
   </main>;
 }

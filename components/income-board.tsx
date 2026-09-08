@@ -1,6 +1,7 @@
 'use client';
 import { useStonkfun } from './stonkfun-provider';
 import { MINT, formatUsd, numberValue, potThreshold, potProgress, relativePayout } from '@/lib/stonkfun';
+import { trackOutbound } from '@/lib/analytics';
 const count=(value:unknown)=>{const n=numberValue(value);return n===null?'—':new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(n)};
 const dollars=(value:unknown)=>{const n=numberValue(value);return n===null?'—':new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(n)};
 export function IncomeBoard(){
@@ -21,7 +22,7 @@ export function IncomeBoard(){
      <div className="income-stat"><h3>PAYOUTS SENT</h3><strong id="payouts-sent" data-json-path={paths.payouts}>{count(metrics.payouts)}</strong></div>
      <div className="income-stat"><h3>TOTAL HOLDERS</h3><strong id="total-holders" data-json-path={paths.holders}>{count(metrics.holders)}</strong></div>
     </div>
-    <div className="income-status"><span className={live?'income-dot':'income-dot stale'} aria-label={live?'Live data':'Waiting for live data'}/><span>last payout <time id="last-payout" dateTime={typeof metrics.lastPayoutAt==='string'?metrics.lastPayoutAt:undefined} data-json-path={paths.lastPayoutAt}>{relativePayout(metrics.lastPayoutAt,now)}</time></span><span aria-hidden="true">·</span><span>{live?'live from':'last available from'} <a href={'https://www.stonkfun.xyz/token/'+MINT} target="_blank" rel="noreferrer">stonkfun.xyz</a></span><span aria-hidden="true">·</span><span>refreshes every 30s</span></div>
+    <div className="income-status"><span className={live?'income-dot':'income-dot stale'} aria-label={live?'Live data':'Waiting for live data'}/><span>last payout <time id="last-payout" dateTime={typeof metrics.lastPayoutAt==='string'?metrics.lastPayoutAt:undefined} data-json-path={paths.lastPayoutAt}>{relativePayout(metrics.lastPayoutAt,now)}</time></span><span aria-hidden="true">·</span><span>{live?'live from':'last available from'} <a href={'https://www.stonkfun.xyz/token/'+MINT} target="_blank" rel="noreferrer" onClick={()=>trackOutbound('payouts','income_board')}>stonkfun.xyz</a></span><span aria-hidden="true">·</span><span>refreshes every 30s</span></div>
    </div>
    <div className="income-side income-side-right" aria-hidden="true"><img src="/income-board-trump.webp" alt="" loading="lazy" decoding="async"/></div>
   </div>

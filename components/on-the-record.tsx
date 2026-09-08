@@ -1,4 +1,5 @@
 import { ArrowUpRight, Heart, MessageCircle, Repeat2 } from 'lucide-react';
+import { trackEvent } from '@/lib/analytics';
 
 const posts = [
   { name: 'Elon Musk', handle: '@elonmusk', date: 'Jul 24, 2020', avatar: '/socials/elon-musk.jpg', quote: <>As a reminder, I’m in <em>favor</em> of universal basic income</>, stats: [['Replies', '3.4K'], ['Reposts', '3.8K'], ['Likes', '48.7K']], url: 'https://x.com/elonmusk/status/1286675223434141697' },
@@ -16,7 +17,7 @@ export function OnTheRecord() {
       <p>People have been saying the quiet part for years. The distribution just moved onchain.</p>
     </div>
     <div className="record-grid">
-      {posts.map((post) => <a className="record-card" key={post.url} href={post.url} target="_blank" rel="noopener" aria-label={`Open ${post.name} post from ${post.date} in a new tab`}>
+      {posts.map((post) => <a className="record-card" key={post.url} href={post.url} target="_blank" rel="noopener" aria-label={`Open ${post.name} post from ${post.date} in a new tab`} onClick={()=>trackEvent('record_post_clicked',{person:post.name,date:post.date})}>
         <div className="record-card-top"><img className="record-avatar" src={post.avatar} alt="" width={70} height={70}/><span><strong>{post.name}</strong><small>{post.handle}</small></span><ArrowUpRight size={17} aria-hidden="true"/></div>
         <blockquote>{post.quote}</blockquote>
         <div className="record-stats" aria-label={`Post engagement: ${post.stats.map(([label,value])=>`${value} ${label.toLowerCase()}`).join(', ')}`}>{post.stats.map(([label,value],index)=>{const Icon=statIcons[index];return <span key={label}><Icon size={14} aria-hidden="true"/><b>{value}</b><em>{label}</em></span>})}</div>

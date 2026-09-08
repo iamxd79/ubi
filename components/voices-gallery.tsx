@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { trackEvent } from '@/lib/analytics';
 
 const videos = [
   { file: '(3) Videos by Universal Basic Income (@stonkubi) _ X.mp4', title: 'Universal Basic Income', detail: 'X / UBI' },
@@ -21,6 +22,7 @@ export function VoicesGallery() {
     if (!video) return;
     if (video.paused) {
       void video.play();
+      trackEvent('voice_video_played', { person: videos[index].title, video: videos[index].file });
       setPlaying(index);
     } else {
       video.pause();
