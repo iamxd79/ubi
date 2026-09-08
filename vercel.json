@@ -1,12 +1,3 @@
 {
-  "buildCommand": "npm run build",
-  "rewrites": [
-    {
-      "source": "/",
-      "has": [
-        { "type": "header", "key": "host", "value": "(?:www\\.)?ubiszn\\.me" }
-      ],
-      "destination": "/links"
-    }
-  ]
+  "buildCommand": "npm run build"
 }

@@ -1,45 +1,8 @@
-'use client';
-import { useRef, useState } from 'react';
-import { ArrowUpRight, ArrowLeft, ArrowRight, Globe2, Copy, Check, Plus } from 'lucide-react';
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import credits from './attributions.json';
-import { UbiHero } from '@/components/ubi-hero';
-import { StonkfunProvider } from '@/components/stonkfun-provider';
-import { IncomeBoard } from '@/components/income-board';
-import { OnTheRecord } from '@/components/on-the-record';
-import { VoicesGallery } from '@/components/voices-gallery';
-import { LegalControls } from '@/components/legal-controls';
-const contract='Lyi47medADEVDd5hxJo1mbxhnBct841sFpcGRyHTuwp';
-const trade='https://www.gg.xyz/post/1395c40f-9dca-4bbb-bf2c-2c3f2f623c34?ref=xd79';
-const chart='https://www.gg.xyz/tokens/solana/Lyi47medADEVDd5hxJo1mbxhnBct841sFpcGRyHTuwp';
-const payouts='https://www.stonkfun.xyz/token/'+contract;
-const exhibits=[
-['1797','Thomas Paine','THE FIRST DIVIDEND','thomas-paine','A share of our common wealth.','In Agrarian Justice, Paine proposed payments funded by inherited landed property: a grant at adulthood and support in old age. More than two hundred years before crypto, he argued that shared natural wealth should benefit everyone. It was an early ancestor of the basic income debate.','https://en.wikipedia.org/wiki/Agrarian_Justice'],
-['1962','Milton Friedman','AN INCOME FLOOR','milton-friedman','A floor beneath every income.','In Capitalism and Freedom, Friedman advocated a negative income tax. People earning below a threshold would receive a payment instead of paying income tax. It was means-tested, rather than universal, but shared a central ambition: a minimum income floor.','https://en.wikipedia.org/wiki/Negative_income_tax'],
-['1967','Martin Luther King Jr.','THE CASE FOR DIGNITY','martin-luther-king','The most direct answer.','In Where Do We Go from Here: Chaos or Community?, King argued for a guaranteed income as a direct response to poverty. His case began with human dignity and economic security. Different politics, a similar conviction: people need an income they can count on.','https://www.businessinsider.com/martin-luther-king-jr-universal-basic-income-ai-economic-equality-2026-1'],
-['1968','The New Jersey Experiment','FROM THEORY TO EVIDENCE','','An idea leaves the page.','The New Jersey Income Maintenance Experiment began testing a negative income tax with real families. Researchers studied how guaranteed payments affected work and family life. The debate now had evidence to examine, not only arguments to exchange.','https://basicincomepilots.com/listing/new-jersey-income-maintenance-experiment/'],
-['2018','Richard Branson','THE AUTOMATION QUESTION','richard-branson','What happens when machines can?','Richard Branson joined technology figures arguing that automation could make basic income necessary. As machines became capable of more work, an old question took on new urgency: how should the gains from that work be shared?','https://www.cnbc.com/2018/02/20/richard-branson-a-i-will-make-universal-basic-income-necessary.html'],
-['2020','Pope Francis','BEYOND ECONOMICS','pope-francis','No worker without dignity.','In an Easter letter to popular movements, Pope Francis called for consideration of a universal basic wage. He focused on informal and precarious workers without protection. The idea had moved beyond economics papers into a wider conversation about dignity.','https://www.vaticannews.va/en/pope/news/2020-04/pope-letter-popular-movements-universal-basic-wage.html'],
-['2024','Sam Altman','CASH, WITHOUT CONDITIONS','sam-altman','Ask what actually happens.','OpenResearch, backed by Sam Altman, released findings from a major unconditional cash study. For three years, 1,000 participants received $1,000 a month; 2,000 comparison participants received $50 a month. Researchers examined work, spending, health and the choices people made with more financial room.','https://www.openresearchlab.org/projects/unconditional-cash-study'],
-['2026','Nouriel Roubini','THE AI ERA','nouriel-roubini','The question keeps returning.','As AI reshapes expectations about work, the basic income debate continues. In a July 2026 interview, economist Nouriel Roubini discussed wider income support in an AI-driven economy. The form may change; the question of distribution remains.','https://fortune.com/2026/07/18/nouriel-roubini-universal-basic-income-socialism-ai-revolution-work-agi-government-stakes/'],
-['Today','$UBI','THE ONCHAIN CHAPTER','','An old idea. A new mechanism.','$UBI brings the theme of distribution onchain. It is a Solana token paired with USDC; StonkFun distributes a share of trading fees to holders. This is a token-holder distribution, not a universal or guaranteed income. This website does not connect to wallets or process payments. Follow the public payout record on StonkFun.',payouts]
-];
-function Art({item}:{item:string[]}){return item[3]?<img src={'/portraits/'+item[3]+'.jpg'} alt={item[1]} loading="lazy" decoding="async"/>:item[0]==='Today'?<div className="token-art"><img className="token-logo" src="/globe.webp" alt="Universal Basic Income" width={820} height={820} loading="lazy" decoding="async"/><span>$UBI</span></div>:<div className="archive-art"><span>RESEARCH ARCHIVE</span><strong>New Jersey<br/>Income<br/>Maintenance<br/>Experiment</strong><hr/><span>1968 — 1972<br/>A STUDY OF GUARANTEED INCOME</span></div>}
-function Seal(){return <div className="seal" aria-label="Universal Basic Income"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><path id="seal-circle" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/></defs><text><textPath href="#seal-circle">UNIVERSAL BASIC INCOME · UNIVERSAL BASIC INCOME · </textPath></text></svg><Globe2 strokeWidth={.85}/></div>}
-export default function Home(){
- const gallery=useRef<HTMLDivElement>(null);const [copied,setCopied]=useState(false);const [copyError,setCopyError]=useState(false);
- async function copy(){try{await navigator.clipboard.writeText(contract);setCopied(true);setTimeout(()=>setCopied(false),2500)}catch{setCopyError(true)}}
- return <main id="top">
- <StonkfunProvider><UbiHero/><IncomeBoard/></StonkfunProvider>
- <OnTheRecord/>
- <section className="lore-intro" id="lore"><div className="eyebrow">01 / THE LORE</div><div className="intro-grid"><h2>Different centuries.<br/>Same <em>conviction.</em></h2><p>This idea has been argued for more than two centuries. People from very different politics kept arriving at the same place: a regular payment that does not depend on a job interview.</p></div><div className="museum-caption"><span>THE COLLECTION · 1797—TODAY</span><span>Choose a portrait. Open a chapter. ↗</span></div></section>
- <section className="museum" aria-label="Museum of basic income"><div className="gallery" ref={gallery}>{exhibits.map((item,index)=>{const credit=credits.find(c=>c.name===item[3]);return <Dialog key={item[0]}><div className="exhibit"><span className="exhibit-number">{String(index+1).padStart(2,'0')} / 09</span><DialogTrigger className="portrait-button" aria-label={'Explore '+item[0]+', '+item[1]}><span className="frame"><Art item={item}/><span className="zoom"><Plus size={21}/></span></span></DialogTrigger><div className="plaque"><span>{item[0]}</span><h3>{item[1]}</h3><p>{item[2]}</p></div></div><DialogContent className="exhibit-dialog"><div className="modal-art"><Art item={item}/></div><div className="modal-copy"><span className="eyebrow">{item[0]} / {item[2]}</span><DialogTitle className="modal-title">{item[4]}</DialogTitle><p className="modal-name">{item[1]}</p><DialogDescription className="modal-description">{item[5]}</DialogDescription><a className="button navy" href={item[6]} target="_blank" rel="noreferrer">Read the source <ArrowUpRight size={18}/></a>{credit&&<p className="credit">Portrait: {credit.author.trim()}. <a href={credit.source} target="_blank" rel="noreferrer">Wikimedia Commons</a> · <a href={credit.licenseUrl||credit.source} target="_blank" rel="noreferrer">{credit.license}</a>. Displayed cropped and in monochrome.</p>}</div></DialogContent></Dialog>})}</div><div className="gallery-controls"><span>229 YEARS OF ASKING A BETTER QUESTION</span><div><button aria-label="Previous portraits" onClick={()=>gallery.current?.scrollBy({left:-640,behavior:'smooth'})}><ArrowLeft size={21}/></button><button aria-label="Next portraits" onClick={()=>gallery.current?.scrollBy({left:640,behavior:'smooth'})}><ArrowRight size={21}/></button></div></div></section>
- <section className="today" id="links"><div className="eyebrow">02 / THE NEXT CHAPTER</div><div className="today-grid"><h2>The idea continues.<br/><em>Onchain.</em></h2><div><p>Earlier versions looked to governments and institutions. $UBI explores distribution through a different mechanism: trading fees paid to token holders in USDC by StonkFun.</p><p className="small-copy">This website tells the story and points to the public record. It does not process payments.</p><a className="text-link dark" href={payouts} target="_blank" rel="noreferrer">Follow the payouts <ArrowUpRight size={18}/></a></div></div><div className="contract"><span className="eyebrow">CA</span><code>{contract}</code><button onClick={copy} aria-label="Copy CA">{copied?<Check size={18}/>:<Copy size={18}/>}<span>{copied?'Copied':'Copy'}</span></button></div>{copyError&&<p role="status">Select the CA above to copy it.</p>}</section>
- <VoicesGallery/>
- <LegalControls/>
- <footer><div className="footer-top"><a className="wordmark" href="#top"><img className="footer-logo" src="/globe.webp" alt="" width={820} height={820} loading="lazy" decoding="async"/><span>UNIVERSAL<br/>BASIC INCOME</span></a><div className="footer-links">{[['X','https://x.com/ubiszn'],['Telegram','https://t.me/ubiszn'],['Trade',trade],['Chart',chart],['Payouts',payouts],['Token','https://solscan.io/token/'+contract]].map(([label,url])=><a key={label} href={url} target="_blank" rel="noreferrer">{label} <ArrowUpRight size={16}/></a>)}</div></div><div className="footer-bottom"><span>© 2026 $UBI</span><a href="#top">Back to top ↑</a></div></footer>
- </main>
+import { headers } from 'next/headers';
+import { LinksHub } from '@/components/links-hub';
+import { UbiSite } from '@/components/ubi-site';
+
+export default async function Home(){
+  const host=(await headers()).get('host')?.split(':')[0]?.toLowerCase();
+  return host==='ubiszn.me'||host==='www.ubiszn.me'?<LinksHub/>:<UbiSite/>;
 }
-
-
-
