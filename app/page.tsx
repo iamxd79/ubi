@@ -11,7 +11,7 @@ import { VoicesGallery } from '@/components/voices-gallery';
 import { LegalControls } from '@/components/legal-controls';
 const contract='Lyi47medADEVDd5hxJo1mbxhnBct841sFpcGRyHTuwp';
 const trade='https://www.gg.xyz/post/1395c40f-9dca-4bbb-bf2c-2c3f2f623c34?ref=xd79';
-const chart='https://dexscreener.com/solana/hmh9syen37waf4hnycymuaprv6xftptdb3mqmemnppsr';
+const chart='https://www.gg.xyz/tokens/solana/Lyi47medADEVDd5hxJo1mbxhnBct841sFpcGRyHTuwp';
 const payouts='https://www.stonkfun.xyz/token/'+contract;
 const exhibits=[
 ['1797','Thomas Paine','THE FIRST DIVIDEND','thomas-paine','A share of our common wealth.','In Agrarian Justice, Paine proposed payments funded by inherited landed property: a grant at adulthood and support in old age. More than two hundred years before crypto, he argued that shared natural wealth should benefit everyone. It was an early ancestor of the basic income debate.','https://en.wikipedia.org/wiki/Agrarian_Justice'],

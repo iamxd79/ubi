@@ -21,7 +21,7 @@ export function UbiHero(){
    <a className="space-paid" href={'https://www.stonkfun.xyz/token/'+MINT} target="_blank" rel="noreferrer"><strong id="hero-paid-to-holders" data-json-path={paths.paidToHolders}>{formatUsd(metrics.paidToHolders)}</strong> already paid to holders</a>
    {Object.hasOwn(metrics,'waitingToDistribute')&&<p className="space-pot">Next pot <span id="waiting-to-distribute">{formatUsd(metrics.waitingToDistribute)}</span> accumulating</p>}
    <div className="space-ca"><span>CA</span><code>{contract}</code><button type="button" className="space-ca-copy" onClick={copyContract} aria-label="Copy $UBI contract">{copied?<Check aria-hidden="true"/>:<Copy aria-hidden="true"/>}<span>{copied?'Copied':'Copy'}</span></button></div>
-   <div className="space-actions"><a href={trade} target="_blank" rel="noreferrer">Buy $UBI <ArrowUpRight aria-hidden="true"/></a><a href="https://dexscreener.com/solana/hmh9syen37waf4hnycymuaprv6xftptdb3mqmemnppsr" target="_blank" rel="noreferrer">Chart <ArrowUpRight aria-hidden="true"/></a></div>
+   <div className="space-actions"><a href={trade} target="_blank" rel="noreferrer">Buy $UBI <ArrowUpRight aria-hidden="true"/></a><a href="https://www.gg.xyz/tokens/solana/Lyi47medADEVDd5hxJo1mbxhnBct841sFpcGRyHTuwp" target="_blank" rel="noreferrer">Chart <ArrowUpRight aria-hidden="true"/></a></div>
   </section>
  </>;
 }
