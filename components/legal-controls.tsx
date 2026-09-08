@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { trackEvent } from '@/lib/analytics';
 
@@ -40,22 +39,12 @@ const documents = [
     'Last updated: September 2026',
     'This website may use cookies and similar browser technologies to operate correctly, remember preferences, improve performance, and understand how visitors use the website.',
     'Essential browser storage may be used for website functionality and basic preferences. This site does not use advertising or retargeting trackers.',
-    'With your consent, we use PostHog for privacy-conscious analytics. It helps us understand aggregated page visits and which links people choose. We do not use advertising or retargeting trackers, and session recordings are disabled.',
+    'We use PostHog for privacy-conscious analytics. It helps us understand aggregated page visits and which links people choose. We do not use advertising or retargeting trackers, and session recordings are disabled.',
     'You can control or delete cookies through your browser settings. Disabling certain cookies may affect parts of the website.',
   ] },
 ] as const;
 
 export function LegalControls() {
-  const [showNotice, setShowNotice] = useState(false);
-  useEffect(() => setShowNotice(window.localStorage.getItem('ubi-cookie-notice') !== 'seen'), []);
-  function dismissNotice(analytics: boolean) {
-    window.localStorage.setItem('ubi-cookie-notice', 'seen');
-    window.localStorage.setItem('ubi-analytics-consent', analytics ? 'accepted' : 'essential');
-    if (analytics) window.dispatchEvent(new Event('ubi-analytics-consent'));
-    setShowNotice(false);
-  }
-  function openPreferences() { setShowNotice(true); }
-
   return <>
     <section className="legal-row" aria-label="Legal information">
       {documents.map((document) => <Dialog key={document.label}>
@@ -63,11 +52,9 @@ export function LegalControls() {
         <DialogContent className="legal-dialog">
           <DialogTitle className="legal-title">{document.title}</DialogTitle>
           <DialogDescription className="legal-copy">{document.paragraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}</DialogDescription>
-          {document.label === 'Cookies' && <button type="button" className="legal-preferences" onClick={openPreferences}>Manage preferences</button>}
           <DialogFooter showCloseButton className="legal-dialog-footer" />
         </DialogContent>
       </Dialog>)}
     </section>
-    {showNotice && <aside className="cookie-notice" aria-label="Cookie notice"><div><strong>Cookies, but chill.</strong><p>Choose whether to share anonymous site analytics. No ads or session recordings.</p></div><div><button className="cookie-essential" onClick={()=>dismissNotice(false)}>Essential only</button><button onClick={()=>dismissNotice(true)}>Accept analytics</button></div></aside>}
   </>;
 }
