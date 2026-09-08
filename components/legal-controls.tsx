@@ -33,7 +33,7 @@ const documents = [
     'Connecting a crypto wallet may expose your public wallet address and publicly available blockchain activity. Blockchain information is generally public and cannot be deleted by this website.',
     'We do not sell personal information. We do not intentionally collect sensitive personal information through this website.',
     'Where applicable, you may have rights concerning personal information under local privacy laws, including rights of access, correction, deletion, restriction, or objection.',
-    'Privacy contact: privacy@YOURDOMAIN.com',
+    'Privacy contact: hello@ubiszn.com',
   ] },
   { label: 'Cookies', title: 'Cookies', paragraphs: [
     'Last updated: September 2026',
