@@ -84,3 +84,12 @@
 .footer-credit a{color:#b9e6ff;text-decoration:underline;text-underline-offset:3px}.footer-credit a:hover{color:#fff}
 
 .income-progress{appearance:none;width:100%;border:0}.income-progress::-webkit-progress-bar{background:#7093af63;border-radius:20px;box-shadow:inset 0 1px 2px #0006}.income-progress::-webkit-progress-value{border-radius:20px;background:linear-gradient(90deg,#00a9ff,#50d9ff);box-shadow:0 0 12px #23c6ff}.income-progress::-moz-progress-bar{border-radius:20px;background:linear-gradient(90deg,#00a9ff,#50d9ff);box-shadow:0 0 12px #23c6ff}
+
+/* Keep the Income Board readable on ultra-wide displays: the data panel stays at an editorial width while the portrait art frames it. */
+@media(min-width:1600px){
+  .income-board{aspect-ratio:auto;height:clamp(760px,50vw,900px);min-height:0}
+  .income-composition{left:50%;width:min(100%,1760px);transform:translateX(-50%)}
+  .income-card{left:50%;bottom:5%;width:min(64%,1220px);height:72%;transform:translateX(-50%)}
+  .income-side{width:min(28%,440px);height:80%}
+  .income-side-left{left:0}.income-side-right{right:0}
+}
