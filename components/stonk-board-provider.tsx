@@ -15,12 +15,11 @@ function readCached(): StonkBoardSnapshot | null {
 }
 
 export function StonkBoardProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<StonkBoardState>({ snapshot: null, live: false });
+  const [state, setState] = useState<StonkBoardState>(() => typeof window === 'undefined' ? { snapshot: null, live: false } : { snapshot: readCached(), live: false });
 
   useEffect(() => {
     let active = true;
-    const cached = readCached();
-    if (cached) setState({ snapshot: cached, live: false });
+
     const refresh = async () => {
       try {
         const response = await fetch('/api/stonk-board/token', { cache: 'no-store' });

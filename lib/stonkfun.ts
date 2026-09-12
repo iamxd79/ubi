@@ -84,7 +84,7 @@ export function relativePayout(value: unknown, now: number) {
   return `${Math.floor(seconds/86400)}d ago`;
 }
 export async function fetchMetrics(fetcher: typeof fetch = fetch, signal?: AbortSignal) {
-  let values: Metrics={}, paths: Record<string,string>={}, failures=0, successes=0;
+  const values: Metrics={}, paths: Record<string,string>={}; let failures=0, successes=0;
   // Keep endpoint order; the detail endpoint supplements the documented pending pot.
   for(const [endpoint,kind] of [[`/tokens/${MINT}`,'token'],['/rewards','rewards'],[`/tokens/${MINT}/rewards`,'detail']] as const){
     if(signal?.aborted) throw new DOMException('Aborted','AbortError');

@@ -17,6 +17,7 @@ export type StonkBoardSnapshot = {
   apy7d: number | null;
   eligibleSupplyPct: number | null;
   minHoldingUsd: number | null;
+  returnUpdatedAt: string | null;
 };
 
 export const compactUsd = (value: number | null) => {

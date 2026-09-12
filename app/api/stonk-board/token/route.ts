@@ -40,7 +40,7 @@ function finite(value: unknown): number | null {
 
 
 function snapshotFrom(source: unknown): StonkBoardSnapshot {
-  const shared = source as { coin?: SourceCoin };
+  const shared = source as { coin?: SourceCoin; enrichmentAt?: string };
   const coin = shared.coin;
   if (!coin || coin.mint !== MINT) throw new Error('UBI was not present in Stonk Board data');
   return {

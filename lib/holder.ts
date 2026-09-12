@@ -44,7 +44,6 @@ export function formatUsdValue(value: number | null) {
 }
 
 async function rpc<T>(method: string, params: unknown[]): Promise<T> {
-  let lastError: Error | null = null;
   for (const endpoint of SOLANA_RPC) {
     try {
       const response = await fetch(endpoint, { method: 'POST', cache: 'no-store', headers: { 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }) });
@@ -52,14 +51,13 @@ async function rpc<T>(method: string, params: unknown[]): Promise<T> {
       const data = await response.json() as { error?: unknown; result?: T };
       if (data.error || data.result === undefined) throw new Error('RPC rejected the request');
       return data.result;
-    } catch (error) { lastError = error instanceof Error ? error : new Error('Solana RPC unavailable'); }
+    } catch { /* Try the next public RPC endpoint. */ }
   }
-  throw lastError || new Error('Solana RPC unavailable');
+  throw new Error('Solana RPC unavailable');
 }
 
 async function rpcBatch<T>(method: string, params: unknown[][]): Promise<Array<T | null>> {
   if (!params.length) return [];
-  let lastError: Error | null = null;
   for (const endpoint of SOLANA_RPC) {
     try {
       const response = await fetch(endpoint, { method: 'POST', cache: 'no-store', headers: { 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify(params.map((value, index) => ({ jsonrpc: '2.0', id: index + 1, method, params: value }))) });
@@ -68,7 +66,7 @@ async function rpcBatch<T>(method: string, params: unknown[][]): Promise<Array<T
       const values = rows.sort((a, b) => (a.id || 0) - (b.id || 0)).map((row) => row.error ? null : row.result ?? null);
       if (values.some((value) => value !== null)) return values;
       throw new Error('RPC rejected the batch request');
-    } catch (error) { lastError = error instanceof Error ? error : new Error('Solana RPC unavailable'); }
+    } catch { /* Try the next public RPC endpoint. */ }
   }
   // Some public Solana RPCs reject JSON-RPC batches. Fall back to individual
   // requests so a card still has the wallet's own history rather than false zeroes.
@@ -139,7 +137,9 @@ export async function getHolderSnapshot(wallet: string, options: { includeHistor
     for (let index = 0; index < usdcHistory.length; index += 20) {
       const signatures = usdcHistory.slice(index, index + 20).map((row) => row.signature).filter((value): value is string => Boolean(value));
       const batch = await rpcBatch<ParsedTransaction>('getTransaction', signatures.map((signature) => [signature, { encoding: 'jsonParsed', maxSupportedTransactionVersion: 0 }])).catch(() => []);
-      transactions.push(...batch.filter((value): value is ParsedTransaction => value !== null));
+      for (const transaction of batch) {
+        if (transaction !== null) transactions.push(transaction);
+      }
     }
     const payouts = transactions.map((transaction) => ({ transaction, amount: usdcDelta(transaction, wallet) })).filter(({ transaction, amount }) => isStonkFunPayout(transaction) && amount > 0);
     totalEarnedUsd = payouts.reduce((total, payout) => total + payout.amount, 0);

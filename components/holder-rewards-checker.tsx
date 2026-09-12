@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CalendarDays, Check, Clipboard, Download, ExternalLink, LoaderCircle, Search, Share2, WalletCards } from 'lucide-react';
 import { formatToken, formatUsdValue, isWalletAddress, shortenWallet, type HolderSnapshot } from '@/lib/holder';
 import { trackEvent } from '@/lib/analytics';
@@ -98,7 +98,7 @@ function HolderCard({ data }: { data: HolderSnapshot }) {
       <button type="button" onClick={() => void copyLink()}><Clipboard size={18} />{copied ? 'Copied' : 'Copy Card Link'}</button>
       <button type="button" onClick={() => void exportCard()}><Download size={18} />Download Card</button>
     </div>
-    {downloadError && <p className="holder-error" role="status">Could not export the card. Try again.</p>}
+    {downloadError && <output className="holder-error">Could not export the card. Try again.</output>}
   </div>;
 }
 
@@ -108,7 +108,7 @@ export function HolderRewardsChecker({ initialWallet, standalone = false }: Prop
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
-  async function lookup(address: string) {
+  const lookup = useCallback(async (address: string) => {
     const value = address.trim();
     if (!isWalletAddress(value)) {
       setData(null);
@@ -132,11 +132,13 @@ export function HolderRewardsChecker({ initialWallet, standalone = false }: Prop
       setState('error');
       setMessage(error instanceof Error ? error.message : 'Holder data is unavailable.');
     }
-  }
+  }, [standalone]);
   useEffect(() => {
-    if (initialWallet) void lookup(initialWallet);
-  }, [initialWallet]);
-  function submit(event: FormEvent<HTMLFormElement>) {
+    if (!initialWallet) return;
+    const timer = window.setTimeout(() => { void lookup(initialWallet); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [initialWallet, lookup]);
+  function submit(event: { preventDefault: () => void }) {
     event.preventDefault();
     void lookup(wallet);
   }
@@ -147,7 +149,7 @@ export function HolderRewardsChecker({ initialWallet, standalone = false }: Prop
       <label><WalletCards size={19} aria-hidden="true" /><input value={wallet} onChange={(event) => setWallet(event.target.value)} placeholder="Enter your Solana wallet address" autoCapitalize="none" autoCorrect="off" spellCheck="false" /></label>
       <button type="submit" disabled={state === 'loading'}>{state === 'loading' ? <><LoaderCircle className="spin" size={18} />Checking…</> : <>Generate Holder Card <ExternalLink size={18} /></>}</button>
     </form>
-    {state === 'error' && <p className="holder-error" role="status">{message}</p>}
+    {state === 'error' && <output className="holder-error">{message}</output>}
     {state === 'loading' && <div className="holder-skeleton" aria-label="Loading holder data"><i /><i /><i /><i /><i /></div>}
     {data && <HolderCard data={data} />}
     {!data && state === 'idle' && <div className="holder-empty"><WalletCards size={24} aria-hidden="true" /><span>Your private wallet is never connected. This checker only reads public on-chain token data.</span></div>}

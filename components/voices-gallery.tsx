@@ -34,10 +34,10 @@ export function VoicesGallery() {
     <div className="voices-heading"><span>04 / THE VOICES</span><h2 id="voices-title">They said it <em>out loud.</em></h2><p>Same idea. Their voices. Click a frame.</p></div>
     <div className="voices-grid">
       {videos.map((item, index) => <article className="voice-exhibit" key={item.file}>
-        <div className="voice-frame" role="button" tabIndex={0} aria-label={`Play or pause ${item.title}: ${item.detail}`} onClick={() => toggle(index)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(index); } }} onMouseEnter={() => setHovered(index)} onMouseLeave={() => setHovered(null)}>
+        <button type="button" className="voice-frame" aria-label={`Play or pause ${item.title}: ${item.detail}`} onClick={() => toggle(index)} onMouseEnter={() => setHovered(index)} onMouseLeave={() => setHovered(null)}>
           <video ref={(element) => { videosRef.current[index] = element; }} src={encodeURI(`/images/${item.file}`)} playsInline preload="metadata" muted controls={hovered === index || playing === index} onPlay={() => setPlaying(index)} onPause={() => setPlaying((current) => current === index ? null : current)}/>
           {playing !== index && <span className="voice-play" aria-hidden="true">▶</span>}
-        </div>
+        </button>
         <div className="voice-plaque"><span>{String(index + 1).padStart(2, '0')} / 06</span><h3>{item.title}</h3><p>{item.detail}</p></div>
       </article>)}
     </div>
