@@ -1,7 +1,7 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { Check, Clipboard, Download, ExternalLink, LoaderCircle, Search, Share2, WalletCards } from 'lucide-react';
+import { FormEvent, useEffect, useState } from 'react';
+import { CalendarDays, Check, Clipboard, Download, ExternalLink, LoaderCircle, Search, Share2, WalletCards } from 'lucide-react';
 import { formatToken, formatUsdValue, isWalletAddress, shortenWallet, type HolderSnapshot } from '@/lib/holder';
 import { trackEvent } from '@/lib/analytics';
 
@@ -12,27 +12,30 @@ function status(snapshot: HolderSnapshot) {
   if (snapshot.eligible === false) return snapshot.balance === 0 ? 'NOT HOLDING' : 'NOT ELIGIBLE';
   return 'UNAVAILABLE';
 }
-
 function formatDate(value: string | null) {
   if (!value) return '—';
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '—' : new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
 }
-
-function formatCount(value: number | null) {
+function formatDays(value: number | null) {
+  return value === null ? '—' : value === 1 ? '1 day' : value + ' days';
+}
+function formatPercent(value: number | null) {
   if (value === null || !Number.isFinite(value)) return '—';
-  return new Intl.NumberFormat('en-US', { notation: value >= 1000 ? 'compact' : 'standard', maximumFractionDigits: 1 }).format(value);
+  return new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3 }).format(value) + '%';
+}
+function formatShare(data: HolderSnapshot) {
+  const share = formatPercent(data.feeEntitlementPct);
+  return data.holderRank === null ? share : share + ' · #' + data.holderRank;
 }
 
 function cardSvg(data: HolderSnapshot) {
   const line = (label: string, value: string, x: number, y: number) => '<text x="' + x + '" y="' + y + '" fill="#66d8ff" font-size="18" font-family="Arial" letter-spacing="2">' + label + '</text><text x="' + x + '" y="' + (y + 46) + '" fill="#fff" font-size="34" font-family="Arial" font-weight="700">' + value + '</text>';
-  return '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900"><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#041b36"/><stop offset="1" stop-color="#010b1c"/></linearGradient><radialGradient id="r"><stop stop-color="#0ccfff" stop-opacity=".3"/><stop offset="1" stop-color="#0ccfff" stop-opacity="0"/></radialGradient></defs><rect width="1600" height="900" fill="url(#g)"/><circle cx="1400" cy="130" r="420" fill="url(#r)"/><rect x="70" y="70" width="1460" height="760" rx="32" fill="#05294c" stroke="#30d4ff" stroke-width="3"/><text x="120" y="145" fill="#74dfff" font-size="23" font-family="Arial" letter-spacing="5">$UBI HOLDER CARD</text><text x="120" y="220" fill="#fff" font-size="48" font-family="Arial" font-weight="700">' + shortenWallet(data.wallet) + '</text><text x="120" y="262" fill="#b8cbe0" font-size="23" font-family="Arial">On-chain UBI position</text><line x1="120" y1="305" x2="1480" y2="305" stroke="#58c8f4" stroke-opacity=".35"/>' + line('CURRENT $UBI BALANCE', formatToken(data.balance), 120, 370) + line('POSITION VALUE', formatUsdValue(data.positionValueUsd), 590, 370) + line('STATUS', status(data), 1060, 370) + '<rect x="120" y="500" width="1360" height="210" rx="18" fill="#03182f" stroke="#54c9ef" stroke-opacity=".35"/>' + line('TOTAL REWARDS EARNED', formatUsdValue(data.totalEarnedUsd), 160, 555) + line('NEXT ESTIMATED PAYOUT', formatUsdValue(data.nextPayoutUsd), 640, 555) + line('HOLDING DURATION', '—', 1120, 555) + '<text x="120" y="775" fill="#b8cbe0" font-size="19" font-family="Arial">UBISZN.COM · Holder data verified on Solana</text></svg>';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900"><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#041b36"/><stop offset="1" stop-color="#010b1c"/></linearGradient><radialGradient id="r"><stop stop-color="#0ccfff" stop-opacity=".3"/><stop offset="1" stop-color="#0ccfff" stop-opacity="0"/></radialGradient></defs><rect width="1600" height="900" fill="url(#g)"/><circle cx="1400" cy="130" r="420" fill="url(#r)"/><rect x="70" y="70" width="1460" height="760" rx="32" fill="#05294c" stroke="#30d4ff" stroke-width="3"/><text x="120" y="145" fill="#74dfff" font-size="23" font-family="Arial" letter-spacing="5">$UBI HOLDER CARD</text><text x="120" y="220" fill="#fff" font-size="48" font-family="Arial" font-weight="700">' + shortenWallet(data.wallet) + '</text><text x="120" y="262" fill="#b8cbe0" font-size="23" font-family="Arial">Personal on-chain UBI position</text><line x1="120" y1="305" x2="1480" y2="305" stroke="#58c8f4" stroke-opacity=".35"/>' + line('CURRENT $UBI BALANCE', formatToken(data.balance), 120, 370) + line('POSITION VALUE', formatUsdValue(data.positionValueUsd), 590, 370) + line('STATUS', status(data), 1060, 370) + '<rect x="120" y="500" width="1360" height="210" rx="18" fill="#03182f" stroke="#54c9ef" stroke-opacity=".35"/>' + line('OBSERVED USDC RECEIVED', formatUsdValue(data.totalEarnedUsd), 160, 555) + line('EST. NEXT PAYOUT', formatUsdValue(data.nextPayoutUsd), 640, 555) + line('HOLDING HISTORY', formatDays(data.holdingDuration), 1120, 555) + '<text x="120" y="775" fill="#b8cbe0" font-size="19" font-family="Arial">UBISZN.COM · Personal public on-chain data</text></svg>';
 }
-
 async function downloadCard(data: HolderSnapshot) {
-  const svg = cardSvg(data);
   const image = new Image();
-  image.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  image.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(cardSvg(data));
   await new Promise<void>((resolve, reject) => { image.onload = () => resolve(); image.onerror = () => reject(new Error('Card export failed.')); });
   const canvas = document.createElement('canvas');
   canvas.width = 1600;
@@ -54,9 +57,7 @@ function HolderCard({ data }: { data: HolderSnapshot }) {
   const [downloadError, setDownloadError] = useState(false);
   const link = typeof window === 'undefined' ? '/rewards/' + data.wallet : window.location.origin + '/rewards/' + data.wallet;
   const earned = formatUsdValue(data.totalEarnedUsd);
-  const message = data.totalEarnedUsd === null
-    ? 'My $UBI holder card: ' + formatToken(data.balance) + ' $UBI · ' + status(data) + ' for holder rewards. Check yours: ' + link
-    : 'My $UBI position has earned ' + earned + ' so far. Holding ' + formatToken(data.balance) + ' $UBI and currently ' + status(data).toLowerCase() + ' for holder rewards. Check yours: ' + link;
+  const message = data.totalEarnedUsd === null ? 'My $UBI holder card: ' + formatToken(data.balance) + ' $UBI · ' + status(data) + ' for holder rewards. Check yours: ' + link : 'My $UBI holder card shows ' + earned + ' in observed USDC payouts. Holding ' + formatToken(data.balance) + ' $UBI and currently ' + status(data).toLowerCase() + ' for holder rewards. Check yours: ' + link;
 
   async function copyLink() {
     await navigator.clipboard.writeText(link);
@@ -64,7 +65,6 @@ function HolderCard({ data }: { data: HolderSnapshot }) {
     trackEvent('holder_card_link_copied', { status: status(data) });
     window.setTimeout(() => setCopied(false), 1800);
   }
-
   async function exportCard() {
     try {
       await downloadCard(data);
@@ -79,27 +79,19 @@ function HolderCard({ data }: { data: HolderSnapshot }) {
       <div className="holder-primary">
         <div><span>CURRENT $UBI BALANCE</span><strong>{formatToken(data.balance)}</strong></div>
         <div><span>POSITION VALUE</span><strong>{formatUsdValue(data.positionValueUsd)}</strong></div>
-        <div><span>YOUR TOTAL EARNED</span><strong>{formatUsdValue(data.totalEarnedUsd)}</strong></div>
-        <div><span>YOUR NEXT PAYOUT</span><strong>{formatUsdValue(data.nextPayoutUsd)}</strong></div>
-        <div><span>YOUR HOLDING DURATION</span><strong>—</strong></div>
+        <div><span>OBSERVED USDC RECEIVED</span><strong>{formatUsdValue(data.totalEarnedUsd)}</strong></div>
+        <div><span>EST. NEXT PAYOUT</span><strong>{formatUsdValue(data.nextPayoutUsd)}</strong></div>
+        <div><span>HOLDING HISTORY</span><strong>{formatDays(data.holdingDuration)}</strong></div>
       </div>
       <div className="holder-secondary">
         <div><span><WalletCards aria-hidden="true" />HOLDER ID</span><strong>{shortenWallet(data.wallet)}</strong></div>
-        <div><span><Check aria-hidden="true" />YOUR TOTAL PAID</span><strong>{formatUsdValue(data.totalPaidUsd)}</strong></div>
-        <div><span><Clipboard aria-hidden="true" />YOUR UNPAID REWARDS</span><strong>{formatUsdValue(data.unpaidRewardsUsd)}</strong></div>
-        <div><span>FIRST DETECTED HOLDING</span><strong>—</strong></div>
-        <div><span>YOUR LAST PAYOUT</span><strong>—</strong></div>
-        <div><span>HOLDER RANK</span><strong>{data.holderRank === null ? '—' : '#' + data.holderRank}</strong></div>
+        <div><span><Check aria-hidden="true" />PAYOUTS OBSERVED</span><strong>{data.payoutCount ?? '—'}</strong></div>
+        <div><span><Clipboard aria-hidden="true" />EST. PENDING SHARE</span><strong>{formatUsdValue(data.unpaidRewardsUsd)}</strong></div>
+        <div><span><CalendarDays aria-hidden="true" />FIRST $UBI ACTIVITY</span><strong>{formatDate(data.firstDetectedAt)}</strong></div>
+        <div><span><CalendarDays aria-hidden="true" />LAST STONKFUN PAYOUT</span><strong>{formatDate(data.lastPayoutAt)}</strong></div>
+        <div><span>SUPPLY SHARE · RANK</span><strong>{formatShare(data)}</strong></div>
       </div>
-      <div className="holder-network" aria-label="Live UBI rewards network data">
-        <div><span>PAID TO ALL HOLDERS</span><strong>{formatUsdValue(data.protocolTotalPaidUsd)}</strong></div>
-        <div><span>CURRENT REWARD POOL</span><strong>{formatUsdValue(data.protocolPendingUsd)}</strong></div>
-        <div><span>PAYOUTS SENT</span><strong>{formatCount(data.protocolPayoutCount)}</strong></div>
-        <div><span>REWARD HOLDERS</span><strong>{formatCount(data.protocolHolderCount)}</strong></div>
-        <div><span>LAST UBI PAYOUT</span><strong>{formatDate(data.protocolLastPayoutAt)}</strong></div>
-        <div><span>MIN. ELIGIBLE HOLDING</span><strong>{formatUsdValue(data.minimumHoldingUsd)}</strong></div>
-      </div>
-      <p className="holder-disclaimer">Balance, value and network rewards are live from Solana and StonkFun. Wallet-level reward history remains — until a public per-wallet ledger is available.</p>
+      <p className="holder-disclaimer">Personal card only. USDC received is reconciled from transfers signed by StonkFun’s public payout authority. The pending share and next payout are estimates from this wallet’s current $UBI share, not a guarantee.</p>
     </article>
     <div className="holder-actions">
       <a href={'https://x.com/intent/post?text=' + encodeURIComponent(message)} target="_blank" rel="noreferrer" onClick={() => trackEvent('holder_card_shared_x', { status: status(data) })}><Share2 size={18} />Share on X</a>
@@ -135,17 +127,15 @@ export function HolderRewardsChecker({ initialWallet, standalone = false }: Prop
       setState('idle');
       const path = '/rewards/' + value;
       if (!standalone) window.history.replaceState({}, '', path);
-      trackEvent('holder_card_generated', { eligible: result.eligible === true, has_balance: (result.balance || 0) > 0 });
+      trackEvent('holder_card_generated', { eligible: result.eligible === true, has_balance: (result.balance || 0) > 0, observed_payouts: result.payoutCount || 0 });
     } catch (error) {
       setState('error');
       setMessage(error instanceof Error ? error.message : 'Holder data is unavailable.');
     }
   }
-
   useEffect(() => {
     if (initialWallet) void lookup(initialWallet);
   }, [initialWallet]);
-
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     void lookup(wallet);

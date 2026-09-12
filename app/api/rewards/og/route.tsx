@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   let balance = '—', value = '—', status = 'UNAVAILABLE';
   if (valid) {
     try {
-      const data = await getHolderSnapshot(wallet);
+      const data = await getHolderSnapshot(wallet, { includeHistory: false });
       balance = formatToken(data.balance);
       value = formatUsdValue(data.positionValueUsd);
       status = data.eligible === true ? 'ELIGIBLE' : data.eligible === false ? 'NOT ELIGIBLE' : 'UNAVAILABLE';
