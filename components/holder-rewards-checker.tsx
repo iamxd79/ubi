@@ -13,6 +13,17 @@ function status(snapshot: HolderSnapshot) {
   return 'UNAVAILABLE';
 }
 
+function formatDate(value: string | null) {
+  if (!value) return '—';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? '—' : new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
+}
+
+function formatCount(value: number | null) {
+  if (value === null || !Number.isFinite(value)) return '—';
+  return new Intl.NumberFormat('en-US', { notation: value >= 1000 ? 'compact' : 'standard', maximumFractionDigits: 1 }).format(value);
+}
+
 function cardSvg(data: HolderSnapshot) {
   const line = (label: string, value: string, x: number, y: number) => '<text x="' + x + '" y="' + y + '" fill="#66d8ff" font-size="18" font-family="Arial" letter-spacing="2">' + label + '</text><text x="' + x + '" y="' + (y + 46) + '" fill="#fff" font-size="34" font-family="Arial" font-weight="700">' + value + '</text>';
   return '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900"><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#041b36"/><stop offset="1" stop-color="#010b1c"/></linearGradient><radialGradient id="r"><stop stop-color="#0ccfff" stop-opacity=".3"/><stop offset="1" stop-color="#0ccfff" stop-opacity="0"/></radialGradient></defs><rect width="1600" height="900" fill="url(#g)"/><circle cx="1400" cy="130" r="420" fill="url(#r)"/><rect x="70" y="70" width="1460" height="760" rx="32" fill="#05294c" stroke="#30d4ff" stroke-width="3"/><text x="120" y="145" fill="#74dfff" font-size="23" font-family="Arial" letter-spacing="5">$UBI HOLDER CARD</text><text x="120" y="220" fill="#fff" font-size="48" font-family="Arial" font-weight="700">' + shortenWallet(data.wallet) + '</text><text x="120" y="262" fill="#b8cbe0" font-size="23" font-family="Arial">On-chain UBI position</text><line x1="120" y1="305" x2="1480" y2="305" stroke="#58c8f4" stroke-opacity=".35"/>' + line('CURRENT $UBI BALANCE', formatToken(data.balance), 120, 370) + line('POSITION VALUE', formatUsdValue(data.positionValueUsd), 590, 370) + line('STATUS', status(data), 1060, 370) + '<rect x="120" y="500" width="1360" height="210" rx="18" fill="#03182f" stroke="#54c9ef" stroke-opacity=".35"/>' + line('TOTAL REWARDS EARNED', formatUsdValue(data.totalEarnedUsd), 160, 555) + line('NEXT ESTIMATED PAYOUT', formatUsdValue(data.nextPayoutUsd), 640, 555) + line('HOLDING DURATION', '—', 1120, 555) + '<text x="120" y="775" fill="#b8cbe0" font-size="19" font-family="Arial">UBISZN.COM · Holder data verified on Solana</text></svg>';
@@ -68,19 +79,27 @@ function HolderCard({ data }: { data: HolderSnapshot }) {
       <div className="holder-primary">
         <div><span>CURRENT $UBI BALANCE</span><strong>{formatToken(data.balance)}</strong></div>
         <div><span>POSITION VALUE</span><strong>{formatUsdValue(data.positionValueUsd)}</strong></div>
-        <div><span>TOTAL EARNED</span><strong>{formatUsdValue(data.totalEarnedUsd)}</strong></div>
-        <div><span>NEXT PAYOUT</span><strong>{formatUsdValue(data.nextPayoutUsd)}</strong></div>
-        <div><span>HOLDING DURATION</span><strong>—</strong></div>
+        <div><span>YOUR TOTAL EARNED</span><strong>{formatUsdValue(data.totalEarnedUsd)}</strong></div>
+        <div><span>YOUR NEXT PAYOUT</span><strong>{formatUsdValue(data.nextPayoutUsd)}</strong></div>
+        <div><span>YOUR HOLDING DURATION</span><strong>—</strong></div>
       </div>
       <div className="holder-secondary">
         <div><span><WalletCards aria-hidden="true" />HOLDER ID</span><strong>{shortenWallet(data.wallet)}</strong></div>
-        <div><span><Check aria-hidden="true" />TOTAL PAID</span><strong>{formatUsdValue(data.totalPaidUsd)}</strong></div>
-        <div><span><Clipboard aria-hidden="true" />UNPAID REWARDS</span><strong>{formatUsdValue(data.unpaidRewardsUsd)}</strong></div>
-        <div><span>FIRST DETECTED</span><strong>—</strong></div>
-        <div><span>LAST HOLDER PAYOUT</span><strong>—</strong></div>
-        <div><span>HOLDER RANK</span><strong>—</strong></div>
+        <div><span><Check aria-hidden="true" />YOUR TOTAL PAID</span><strong>{formatUsdValue(data.totalPaidUsd)}</strong></div>
+        <div><span><Clipboard aria-hidden="true" />YOUR UNPAID REWARDS</span><strong>{formatUsdValue(data.unpaidRewardsUsd)}</strong></div>
+        <div><span>FIRST DETECTED HOLDING</span><strong>—</strong></div>
+        <div><span>YOUR LAST PAYOUT</span><strong>—</strong></div>
+        <div><span>HOLDER RANK</span><strong>{data.holderRank === null ? '—' : '#' + data.holderRank}</strong></div>
       </div>
-      <p className="holder-disclaimer">On-chain balance and USD value are live. Wallet-level reward history is shown only when verifiable; unavailable values remain —.</p>
+      <div className="holder-network" aria-label="Live UBI rewards network data">
+        <div><span>PAID TO ALL HOLDERS</span><strong>{formatUsdValue(data.protocolTotalPaidUsd)}</strong></div>
+        <div><span>CURRENT REWARD POOL</span><strong>{formatUsdValue(data.protocolPendingUsd)}</strong></div>
+        <div><span>PAYOUTS SENT</span><strong>{formatCount(data.protocolPayoutCount)}</strong></div>
+        <div><span>REWARD HOLDERS</span><strong>{formatCount(data.protocolHolderCount)}</strong></div>
+        <div><span>LAST UBI PAYOUT</span><strong>{formatDate(data.protocolLastPayoutAt)}</strong></div>
+        <div><span>MIN. ELIGIBLE HOLDING</span><strong>{formatUsdValue(data.minimumHoldingUsd)}</strong></div>
+      </div>
+      <p className="holder-disclaimer">Balance, value and network rewards are live from Solana and StonkFun. Wallet-level reward history remains — until a public per-wallet ledger is available.</p>
     </article>
     <div className="holder-actions">
       <a href={'https://x.com/intent/post?text=' + encodeURIComponent(message)} target="_blank" rel="noreferrer" onClick={() => trackEvent('holder_card_shared_x', { status: status(data) })}><Share2 size={18} />Share on X</a>

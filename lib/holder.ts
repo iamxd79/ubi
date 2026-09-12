@@ -1,7 +1,22 @@
 import { MINT, fetchMetrics, numberValue } from './stonkfun';
 
 export const SOLANA_RPC = ['https://api.mainnet-beta.solana.com', 'https://solana-rpc.publicnode.com'];
+const STONKFUN_URL = 'https://www.stonkfun.xyz';
 export const isWalletAddress = (value: string) => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(value);
+
+type StonkRewards = {
+  distributedUsd?: number;
+  pendingUsd?: number;
+  payoutCount?: number;
+  holderCount?: number;
+  lastPayoutAt?: string;
+  minHoldingUsd?: number;
+  minDistributionUsd?: number;
+};
+
+type StonkHolders = {
+  holders?: Array<{ address?: string; rank?: number }>;
+};
 
 export type HolderSnapshot = {
   wallet: string;
@@ -17,7 +32,14 @@ export type HolderSnapshot = {
   firstDetectedAt: null;
   lastPayoutAt: null;
   feeEntitlementPct: null;
-  holderRank: null;
+  holderRank: number | null;
+  protocolTotalPaidUsd: number | null;
+  protocolPendingUsd: number | null;
+  protocolPayoutCount: number | null;
+  protocolHolderCount: number | null;
+  protocolLastPayoutAt: string | null;
+  minimumHoldingUsd: number | null;
+  payoutThresholdUsd: number | null;
 };
 
 export function shortenWallet(wallet: string) {
@@ -39,8 +61,7 @@ async function rpc(method: string, params: unknown[]) {
   for (const endpoint of SOLANA_RPC) {
     try {
       const response = await fetch(endpoint, {
-        method: 'POST',
-        cache: 'no-store',
+        method: 'POST', cache: 'no-store',
         headers: { 'content-type': 'application/json', accept: 'application/json' },
         body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
       });
@@ -54,33 +75,43 @@ async function rpc(method: string, params: unknown[]) {
   }
   throw lastError || new Error('Solana RPC unavailable');
 }
+
+async function stonkJson<T>(path: string): Promise<T | null> {
+  try {
+    const response = await fetch(STONKFUN_URL + path, { cache: 'no-store', headers: { accept: 'application/json' } });
+    if (!response.ok) return null;
+    return await response.json() as T;
+  } catch { return null; }
+}
+
 export async function getHolderSnapshot(wallet: string): Promise<HolderSnapshot> {
   if (!isWalletAddress(wallet)) throw new Error('Enter a valid Solana wallet address.');
 
-  const [tokenAccounts, market] = await Promise.all([
+  const [tokenAccounts, market, rewards, holders] = await Promise.all([
     rpc('getTokenAccountsByOwner', [wallet, { mint: MINT }, { encoding: 'jsonParsed' }]) as Promise<{ value?: Array<{ account?: { data?: { parsed?: { info?: { tokenAmount?: { uiAmount?: number | null } } } } } }> }>,
     fetchMetrics(),
+    stonkJson<StonkRewards>('/api/rewards?mint=' + encodeURIComponent(MINT)),
+    stonkJson<StonkHolders>('/api/token-holders?mint=' + encodeURIComponent(MINT)),
   ]);
 
   const balance = (tokenAccounts.value || []).reduce((total, account) => total + (account.account?.data?.parsed?.info?.tokenAmount?.uiAmount || 0), 0);
   const priceUsd = numberValue(market.values.price);
   const positionValueUsd = priceUsd === null ? null : balance * priceUsd;
-  const eligible = positionValueUsd === null ? null : positionValueUsd >= 20;
+  const minimumHoldingUsd = rewards?.minHoldingUsd ?? null;
+  const eligible = positionValueUsd === null || minimumHoldingUsd === null ? null : positionValueUsd >= minimumHoldingUsd;
+  const rank = holders?.holders?.find((holder) => holder.address === wallet)?.rank ?? null;
 
   return {
-    wallet,
-    balance,
-    positionValueUsd,
-    eligible,
-    priceUsd,
-    totalEarnedUsd: null,
-    totalPaidUsd: null,
-    unpaidRewardsUsd: null,
-    nextPayoutUsd: null,
-    holdingDuration: null,
-    firstDetectedAt: null,
-    lastPayoutAt: null,
-    feeEntitlementPct: null,
-    holderRank: null,
+    wallet, balance, positionValueUsd, eligible, priceUsd,
+    totalEarnedUsd: null, totalPaidUsd: null, unpaidRewardsUsd: null, nextPayoutUsd: null,
+    holdingDuration: null, firstDetectedAt: null, lastPayoutAt: null, feeEntitlementPct: null,
+    holderRank: rank,
+    protocolTotalPaidUsd: rewards?.distributedUsd ?? null,
+    protocolPendingUsd: rewards?.pendingUsd ?? null,
+    protocolPayoutCount: rewards?.payoutCount ?? null,
+    protocolHolderCount: rewards?.holderCount ?? null,
+    protocolLastPayoutAt: rewards?.lastPayoutAt ?? null,
+    minimumHoldingUsd,
+    payoutThresholdUsd: rewards?.minDistributionUsd ?? null,
   };
 }
