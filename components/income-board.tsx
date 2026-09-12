@@ -5,6 +5,7 @@ import { useStonkBoard } from './stonk-board-provider';
 import { MINT, formatUsd, numberValue, potThreshold, potProgress, relativePayout } from '@/lib/stonkfun';
 import { compactUsd, percent, STONK_BOARD_URL } from '@/lib/stonk-board';
 import { trackEvent, trackOutbound } from '@/lib/analytics';
+import { BarChart3, CircleDollarSign, Landmark, TrendingUp, UsersRound } from 'lucide-react';
 
 const count = (value: unknown) => {
   const n = numberValue(value);
@@ -55,11 +56,11 @@ export function IncomeBoard() {
         <section className="income-market" aria-label="UBI market snapshot">
           <div className="income-market-header"><span>LIVE MARKET SNAPSHOT</span><small>independent Stonk Board data</small></div>
           <div className="income-market-grid">
-            <div className="income-market-stat"><span>MARKET CAP</span><strong>{compactUsd(snapshot?.marketCapUsd ?? null)}</strong></div>
-            <div className="income-market-stat"><span>VOLUME · 24H</span><strong>{compactUsd(snapshot?.volume24hUsd ?? null)}</strong></div>
-            <div className="income-market-stat"><span>PRICE</span><strong>{compactUsd(snapshot?.priceUsd ?? null)}</strong></div>
-            <div className="income-market-stat"><span>24H CHANGE</span><strong className={(snapshot?.change24h ?? 0) >= 0 ? 'positive' : 'negative'}>{snapshot?.change24h === null || snapshot?.change24h === undefined ? '—' : (snapshot.change24h >= 0 ? '+' : '') + percent(snapshot.change24h)}</strong></div>
-            <div className="income-market-stat"><span>ELIGIBLE SUPPLY</span><strong>{percent(snapshot?.eligibleSupplyPct ?? null)}</strong></div>
+            <div className="income-market-stat"><span><Landmark aria-hidden="true" />MARKET CAP</span><strong>{compactUsd(snapshot?.marketCapUsd ?? null)}</strong></div>
+            <div className="income-market-stat"><span><BarChart3 aria-hidden="true" />VOLUME · 24H</span><strong>{compactUsd(snapshot?.volume24hUsd ?? null)}</strong></div>
+            <div className="income-market-stat"><span><CircleDollarSign aria-hidden="true" />PRICE</span><strong>{compactUsd(snapshot?.priceUsd ?? null)}</strong></div>
+            <div className="income-market-stat"><span><TrendingUp aria-hidden="true" />24H CHANGE</span><strong className={(snapshot?.change24h ?? 0) >= 0 ? 'positive' : 'negative'}>{snapshot?.change24h === null || snapshot?.change24h === undefined ? '—' : (snapshot.change24h >= 0 ? '+' : '') + percent(snapshot.change24h)}</strong></div>
+            <div className="income-market-stat"><span><UsersRound aria-hidden="true" />ELIGIBLE SUPPLY</span><strong>{percent(snapshot?.eligibleSupplyPct ?? null)}</strong></div>
           </div>
         </section>
 
