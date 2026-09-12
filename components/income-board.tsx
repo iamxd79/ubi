@@ -22,15 +22,6 @@ function bondedAge(date: string | null) {
   return days > 365 ? `${Math.floor(days / 365)}y ${Math.floor((days % 365) / 30)}m` : `${days}d`;
 }
 
-function Sparkline({ points }: { points: number[] }) {
-  if (points.length < 2) return null;
-  const min = Math.min(...points);
-  const max = Math.max(...points);
-  const span = max - min || 1;
-  const line = points.map((point, index) => `${(index / (points.length - 1)) * 100},${91 - ((point - min) / span) * 76}`).join(' ');
-  return <svg className="income-sparkline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="24 hour price history" role="img"><polyline points={line} /></svg>;
-}
-
 export function IncomeBoard() {
   const { metrics, paths, now, live } = useStonkfun();
   const { snapshot, live: boardLive } = useStonkBoard();
@@ -58,18 +49,18 @@ export function IncomeBoard() {
             <div className="income-yield-feature"><span>3D LOOKBACK</span><strong>{percent(snapshot?.apr3d ?? null)} <small>APR</small></strong><p>{percent(snapshot?.apy3d ?? null)} APY · {dailyPer100 === null ? '—' : `$${dailyPer100.toFixed(2)} / $100 daily`}</p></div>
             <div><span>7D LOOKBACK</span><strong>{percent(snapshot?.apr7d ?? null)} <small>APR</small></strong><p>{percent(snapshot?.apy7d ?? null)} APY</p></div>
           </div>
-          <p className="income-yield-note">Modeled from observed fees and eligible holdings. APY assumes daily reinvestment; it is not a forecast or guarantee.</p>
+          <p className="income-yield-note">Modeled from observed fees and eligible holdings above the $20 minimum. APY assumes daily reinvestment; it is not a forecast or guarantee.</p>
         </section>
 
         <section className="income-market" aria-label="UBI market snapshot">
-          <div className="income-market-stat"><span>MARKET CAP</span><strong>{compactUsd(snapshot?.marketCapUsd ?? null)}</strong></div>
-          <div className="income-market-stat"><span>VOLUME · 24H</span><strong>{compactUsd(snapshot?.volume24hUsd ?? null)}</strong></div>
-          <div className="income-market-stat"><span>PRICE</span><strong>{compactUsd(snapshot?.priceUsd ?? null)}</strong></div>
-          <div className="income-market-stat income-change"><span>24H CHANGE</span><strong className={(snapshot?.change24h ?? 0) >= 0 ? 'positive' : 'negative'}>{snapshot?.change24h === null || snapshot?.change24h === undefined ? '—' : `${snapshot.change24h >= 0 ? '+' : ''}${percent(snapshot.change24h)}`}</strong><Sparkline points={snapshot?.chart ?? []} /></div>
-          <div className="income-market-stat"><span>BOARD LIFETIME PAID</span><strong>{compactUsd(snapshot?.paidLifetimeUsd ?? null)}</strong></div>
-          <div className="income-market-stat"><span>ELIGIBLE SUPPLY</span><strong>{percent(snapshot?.eligibleSupplyPct ?? null)}</strong></div>
-          <div className="income-market-stat"><span>MINIMUM HOLDING</span><strong>{compactUsd(snapshot?.minHoldingUsd ?? null)}</strong></div>
-          <div className="income-market-stat"><span>FEE ENTITLEMENT</span><strong>{percent(snapshot?.feeEntitlementPct ?? null)}</strong></div>
+          <div className="income-market-header"><span>LIVE MARKET SNAPSHOT</span><small>independent Stonk Board data</small></div>
+          <div className="income-market-grid">
+            <div className="income-market-stat"><span>MARKET CAP</span><strong>{compactUsd(snapshot?.marketCapUsd ?? null)}</strong></div>
+            <div className="income-market-stat"><span>VOLUME · 24H</span><strong>{compactUsd(snapshot?.volume24hUsd ?? null)}</strong></div>
+            <div className="income-market-stat"><span>PRICE</span><strong>{compactUsd(snapshot?.priceUsd ?? null)}</strong></div>
+            <div className="income-market-stat"><span>24H CHANGE</span><strong className={(snapshot?.change24h ?? 0) >= 0 ? 'positive' : 'negative'}>{snapshot?.change24h === null || snapshot?.change24h === undefined ? '—' : (snapshot.change24h >= 0 ? '+' : '') + percent(snapshot.change24h)}</strong></div>
+            <div className="income-market-stat"><span>ELIGIBLE SUPPLY</span><strong>{percent(snapshot?.eligibleSupplyPct ?? null)}</strong></div>
+          </div>
         </section>
 
         <div className="income-status"><span className={live ? 'income-dot' : 'income-dot stale'} aria-label={live ? 'Live data' : 'Waiting for live data'} /><span>last payout <time id="last-payout" dateTime={typeof metrics.lastPayoutAt === 'string' ? metrics.lastPayoutAt : undefined} data-json-path={paths.lastPayoutAt}>{relativePayout(metrics.lastPayoutAt, now)}</time></span><span aria-hidden="true">·</span><span>{live ? 'live from' : 'last available from'} <a href={'https://www.stonkfun.xyz/token/' + MINT} target="_blank" rel="noreferrer" onClick={() => trackOutbound('payouts', 'income_board')}>stonkfun.xyz</a></span><span aria-hidden="true">·</span><span>{boardLive ? 'market model refreshed' : 'market model cached'} every 15m</span></div>

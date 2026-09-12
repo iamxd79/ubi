@@ -9,7 +9,6 @@ export type StonkBoardSnapshot = {
   marketCapUsd: number | null;
   volume24hUsd: number | null;
   change24h: number | null;
-  chart: number[];
   apr24h: number | null;
   apy24h: number | null;
   apr3d: number | null;
@@ -18,13 +17,6 @@ export type StonkBoardSnapshot = {
   apy7d: number | null;
   eligibleSupplyPct: number | null;
   minHoldingUsd: number | null;
-  feeEntitlementPct: number | null;
-  holderCount: number | null;
-  paidLifetimeUsd: number | null;
-  payoutCount: number | null;
-  lastPayoutAt: string | null;
-  marketAt: string | null;
-  returnUpdatedAt: string | null;
 };
 
 export const compactUsd = (value: number | null) => {
