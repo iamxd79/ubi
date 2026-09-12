@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: holder + ' | $UBI Holder Rewards',
     description: 'Live $UBI holder status and shareable rewards card.',
-    openGraph: { title: holder + ' | $UBI Holder Rewards', description: 'Live $UBI holder status and shareable rewards card.', images: [{ url: image, width: 1200, height: 630, type: 'image/svg+xml' }] },
+    openGraph: { title: holder + ' | $UBI Holder Rewards', description: 'Live $UBI holder status and shareable rewards card.', images: [{ url: image, width: 1200, height: 630, type: 'image/png' }] },
     twitter: { card: 'summary_large_image', title: holder + ' | $UBI Holder Rewards', description: 'Live $UBI holder status and shareable rewards card.', images: [image] },
   };
 }
