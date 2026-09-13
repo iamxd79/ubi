@@ -134,3 +134,10 @@
   .income-card{height:min(100%,620px);max-height:620px}
   .income-side{height:min(100%,640px);max-height:640px}
 }
+
+/* Editorial desktop composition: wider data panel, larger portrait art, fluid grid columns. */
+@media(min-width:1201px){
+  .income-composition{grid-template-columns:minmax(220px,1fr) minmax(680px,62%) minmax(220px,1fr);width:min(96%,1900px)}
+  .income-side{height:min(100%,720px);max-height:720px}
+  .income-side img,.income-side-left img,.income-side-right img{left:50%;right:auto;width:150%;height:118%;max-width:none;transform:translateX(-50%);object-fit:contain;object-position:center bottom}
+}
