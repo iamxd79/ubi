@@ -16,8 +16,16 @@ export function VoicesGallery() {
   const videosRef = useRef<(HTMLVideoElement | null)[]>([]);
   const [hovered, setHovered] = useState<number | null>(null);
   const [playing, setPlaying] = useState<number | null>(null);
+  const [loaded, setLoaded] = useState<number | null>(null);
+  const [requestedPlay, setRequestedPlay] = useState<number | null>(null);
 
   function toggle(index: number) {
+    if (loaded !== index) {
+      setLoaded(index);
+      setRequestedPlay(index);
+      trackEvent('voice_video_played', { person: videos[index].title, video: videos[index].file });
+      return;
+    }
     const video = videosRef.current[index];
     if (!video) return;
     if (video.paused) {
@@ -35,7 +43,7 @@ export function VoicesGallery() {
     <div className="voices-grid">
       {videos.map((item, index) => <article className="voice-exhibit" key={item.file}>
         <button type="button" className="voice-frame" aria-label={`Play or pause ${item.title}: ${item.detail}`} onClick={() => toggle(index)} onMouseEnter={() => setHovered(index)} onMouseLeave={() => setHovered(null)}>
-          <video ref={(element) => { videosRef.current[index] = element; }} src={encodeURI(`/images/${item.file}`)} playsInline preload="metadata" muted controls={hovered === index || playing === index} onPlay={() => setPlaying(index)} onPause={() => setPlaying((current) => current === index ? null : current)}/>
+          {loaded === index ? <video ref={(element) => { videosRef.current[index] = element; }} src={encodeURI(`/images/${item.file}`)} playsInline preload="none" muted controls={hovered === index || playing === index} onCanPlay={() => { if (requestedPlay === index) { void videosRef.current[index]?.play(); setRequestedPlay(null); } }} onPlay={() => setPlaying(index)} onPause={() => setPlaying((current) => current === index ? null : current)}/> : <span className="voice-poster" aria-hidden="true"><small>PLAY THE CLIP</small><strong>{item.title}</strong><em>{item.detail}</em></span>}
           {playing !== index && <span className="voice-play" aria-hidden="true">▶</span>}
         </button>
         <div className="voice-plaque"><span>{String(index + 1).padStart(2, '0')} / 06</span><h3>{item.title}</h3><p>{item.detail}</p></div>
