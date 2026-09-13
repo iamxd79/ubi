@@ -118,3 +118,11 @@
 .voice-launch{position:absolute;inset:0;display:block;width:100%;height:100%;padding:0;border:0;background:#06142f;color:inherit;font:inherit;text-align:left;cursor:pointer}
 .voice-launch:focus-visible{outline:2px solid #f4e0aa;outline-offset:-4px}
 .voice-frame iframe{width:100%;height:100%;display:block;border:0;background:#06142f}
+
+/* Stream thumbnails keep the gallery visual without fetching video playback. */
+.voice-thumbnail{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .45s ease,filter .35s ease}
+.voice-launch:hover .voice-thumbnail,.voice-launch:focus-visible .voice-thumbnail{transform:scale(1.035);filter:brightness(.82)}
+.voice-thumbnail-shade{position:absolute;inset:0;display:flex;align-items:flex-end;padding:26px;background:linear-gradient(180deg,transparent 42%,#010914c9 100%);pointer-events:none}
+.voice-thumbnail-shade small{color:#d8c799;font-size:9px;font-style:normal;letter-spacing:1.8px}
+.voice-play{font-size:0}
+.voice-play:after{content:'';display:block;margin-left:4px;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:12px solid currentColor}

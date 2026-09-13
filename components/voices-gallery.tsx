@@ -12,6 +12,10 @@ const videos = [
   { uid: '0318800d72c4da87d693348027e99367', title: 'Universal Basic Income', detail: 'Now coming to Canada' },
 ] as const;
 
+function streamThumbnail(uid: string) {
+  return `https://videodelivery.net/${uid}/thumbnails/thumbnail.jpg?time=1s&height=800`;
+}
+
 export function VoicesGallery() {
   const [loaded, setLoaded] = useState<number | null>(null);
 
@@ -25,7 +29,7 @@ export function VoicesGallery() {
     <div className="voices-grid">
       {videos.map((item, index) => <article className="voice-exhibit" key={item.uid}>
         <div className="voice-frame">
-          {loaded === index ? <iframe title={`${item.title}: ${item.detail}`} src={`https://iframe.videodelivery.net/${item.uid}?autoplay=true`} allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowFullScreen /> : <button type="button" className="voice-launch" aria-label={`Play ${item.title}: ${item.detail}`} onClick={() => play(index)}><span className="voice-poster" aria-hidden="true"><small>PLAY THE CLIP</small><strong>{item.title}</strong><em>{item.detail}</em></span><span className="voice-play" aria-hidden="true">�w^~)�v</span></button>}
+          {loaded === index ? <iframe title={`${item.title}: ${item.detail}`} src={`https://iframe.videodelivery.net/${item.uid}?autoplay=true`} allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowFullScreen /> : <button type="button" className="voice-launch" aria-label={`Play ${item.title}: ${item.detail}`} onClick={() => play(index)}><img className="voice-thumbnail" src={streamThumbnail(item.uid)} alt="" loading={index < 3 ? 'eager' : 'lazy'} decoding="async" /><span className="voice-thumbnail-shade" aria-hidden="true"><small>PLAY THE CLIP</small></span><span className="voice-play" aria-hidden="true" /></button>}
         </div>
         <div className="voice-plaque"><span>{String(index + 1).padStart(2, '0')} / 06</span><h3>{item.title}</h3><p>{item.detail}</p></div>
       </article>)}
