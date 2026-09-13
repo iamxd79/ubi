@@ -169,9 +169,3 @@
  .space-actions{margin-top:28px}
  .space-ca{margin-top:16px}
 }
-
-/* Holder rewards is a first-class path from the main navigation. */
-.space-nav .rewards-link{gap:7px;padding:9px 13px;border:1px solid #26cbff91;background:#06345f;color:#c3f2ff;box-shadow:inset 0 0 0 1px #74e7ff20}
-.space-nav .rewards-link:hover{background:#075485;color:#fff;box-shadow:0 0 20px #00cfff45}
-.space-nav .rewards-link svg{color:#54dcff}
-@media(max-width:920px){.space-nav nav .rewards-link{margin-top:8px;border-color:#26cbff91;background:#06345f}.space-nav nav .rewards-link:hover{background:#075485}}
