@@ -1,51 +1,32 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { trackEvent } from '@/lib/analytics';
 
 const videos = [
-  { file: '(3) Videos by Universal Basic Income (@stonkubi) _ X.mp4', title: 'Universal Basic Income', detail: 'X / UBI' },
-  { file: 'another one.mp4', title: 'Universal Basic Income', detail: 'A recorded voice' },
-  { file: 'Elon musk saying it.mp4', title: 'Elon Musk', detail: 'Saying it out loud' },
-  { file: 'Elon Musk Some kind of universal basic income is.mp4', title: 'Elon Musk', detail: 'Some kind of universal basic income' },
-  { file: 'Sam Altman.mp4', title: 'Sam Altman', detail: 'On basic income' },
-  { file: 'Universal Basic Income is Now Coming to Canada..mp4', title: 'Universal Basic Income', detail: 'Now coming to Canada' },
+  { uid: 'ababd9e4d3c85847d26dac6dfea61521', title: 'Joe Rogan', detail: 'On universal basic income' },
+  { uid: '839f08c7bcf3cd590099ee3b5fa3a273', title: 'Universal Basic Income', detail: 'A recorded voice' },
+  { uid: '4734c803aa1672223425c7dd8e7ae762', title: 'Elon Musk', detail: 'Saying it out loud' },
+  { uid: '858909ed77c0dfe549eae7db227b2a2a', title: 'Elon Musk', detail: 'Some kind of universal basic income' },
+  { uid: '1408509d43820cf3770a24461f019d00', title: 'Sam Altman', detail: 'On basic income' },
+  { uid: '0318800d72c4da87d693348027e99367', title: 'Universal Basic Income', detail: 'Now coming to Canada' },
 ] as const;
 
 export function VoicesGallery() {
-  const videosRef = useRef<(HTMLVideoElement | null)[]>([]);
-  const [hovered, setHovered] = useState<number | null>(null);
-  const [playing, setPlaying] = useState<number | null>(null);
   const [loaded, setLoaded] = useState<number | null>(null);
-  const [requestedPlay, setRequestedPlay] = useState<number | null>(null);
 
-  function toggle(index: number) {
-    if (loaded !== index) {
-      setLoaded(index);
-      setRequestedPlay(index);
-      trackEvent('voice_video_played', { person: videos[index].title, video: videos[index].file });
-      return;
-    }
-    const video = videosRef.current[index];
-    if (!video) return;
-    if (video.paused) {
-      void video.play();
-      trackEvent('voice_video_played', { person: videos[index].title, video: videos[index].file });
-      setPlaying(index);
-    } else {
-      video.pause();
-      setPlaying(null);
-    }
+  function play(index: number) {
+    setLoaded(index);
+    trackEvent('voice_video_played', { person: videos[index].title, stream_uid: videos[index].uid });
   }
 
   return <section className="voices-gallery" aria-labelledby="voices-title">
     <div className="voices-heading"><span>04 / THE VOICES</span><h2 id="voices-title">They said it <em>out loud.</em></h2><p>Same idea. Their voices. Click a frame.</p></div>
     <div className="voices-grid">
-      {videos.map((item, index) => <article className="voice-exhibit" key={item.file}>
-        <button type="button" className="voice-frame" aria-label={`Play or pause ${item.title}: ${item.detail}`} onClick={() => toggle(index)} onMouseEnter={() => setHovered(index)} onMouseLeave={() => setHovered(null)}>
-          {loaded === index ? <video ref={(element) => { videosRef.current[index] = element; }} src={encodeURI(`/images/${item.file}`)} playsInline preload="none" muted controls={hovered === index || playing === index} onCanPlay={() => { if (requestedPlay === index) { void videosRef.current[index]?.play(); setRequestedPlay(null); } }} onPlay={() => setPlaying(index)} onPause={() => setPlaying((current) => current === index ? null : current)}/> : <span className="voice-poster" aria-hidden="true"><small>PLAY THE CLIP</small><strong>{item.title}</strong><em>{item.detail}</em></span>}
-          {playing !== index && <span className="voice-play" aria-hidden="true">▶</span>}
-        </button>
+      {videos.map((item, index) => <article className="voice-exhibit" key={item.uid}>
+        <div className="voice-frame">
+          {loaded === index ? <iframe title={`${item.title}: ${item.detail}`} src={`https://iframe.videodelivery.net/${item.uid}?autoplay=true`} allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowFullScreen /> : <button type="button" className="voice-launch" aria-label={`Play ${item.title}: ${item.detail}`} onClick={() => play(index)}><span className="voice-poster" aria-hidden="true"><small>PLAY THE CLIP</small><strong>{item.title}</strong><em>{item.detail}</em></span><span className="voice-play" aria-hidden="true">�w^~)�v</span></button>}
+        </div>
         <div className="voice-plaque"><span>{String(index + 1).padStart(2, '0')} / 06</span><h3>{item.title}</h3><p>{item.detail}</p></div>
       </article>)}
     </div>
