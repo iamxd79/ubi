@@ -93,3 +93,20 @@
   .income-side{width:min(28%,440px);height:80%}
   .income-side-left{left:0}.income-side-right{right:0}
 }
+
+/* Fluid rewards layouts: data stays in a true center column and artwork never sits beneath it. */
+@media(min-width:1201px){
+  .income-board{display:grid;grid-template-rows:auto auto minmax(0,1fr);aspect-ratio:auto;height:clamp(670px,46vw,890px);min-height:670px;padding:clamp(30px,2.8vw,54px) 0 0}
+  .income-composition{position:relative;inset:auto;left:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(640px,58%) minmax(0,1fr);align-items:end;width:min(92%,1760px);height:100%;margin:12px auto 0;transform:none;overflow:visible}
+  .income-card{position:relative;grid-column:2;left:auto;bottom:auto;width:100%;height:min(92%,620px);transform:none}
+  .income-side{position:relative;inset:auto;width:100%;height:min(100%,640px);align-self:end}
+  .income-side-left{grid-column:1}.income-side-right{grid-column:3}
+  .income-side img,.income-side-left img,.income-side-right img{right:auto;left:auto;bottom:0;width:100%;height:100%;max-width:100%;object-fit:contain;object-position:center bottom}
+}
+@media(max-width:980px){
+  .holder-primary{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 20px}
+  .holder-primary>div{padding:18px 14px;border-bottom:1px solid #75d2ff33}
+  .holder-primary>div:first-child{padding-left:0}.holder-primary>div:nth-child(3){padding-left:0;border-left:0}.holder-primary>div:nth-child(5){grid-column:span 2;padding-left:0;border-bottom:0}
+  .holder-secondary{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 20px}
+  .holder-secondary>div:nth-child(3n+1){padding-left:14px;border-left:1px solid #75d2ff24}.holder-secondary>div:nth-child(2n+1){padding-left:0;border-left:0}.holder-secondary>div:nth-child(n+4){border-bottom:1px solid #75d2ff24}.holder-secondary>div:nth-last-child(-n+2){border-bottom:0}.holder-disclaimer{padding:15px 20px}
+}
